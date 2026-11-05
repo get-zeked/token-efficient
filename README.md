@@ -1,80 +1,26 @@
 # token-efficient
 
-> Adapted from [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient) for Perplexity Computer.
+A single skill for Perplexity Computer that cuts routine tool commentary while keeping the result, its evidence, and anything the user needs to act. Ask for a detailed explanation, a particular format, or a source list whenever you need one.
 
-One SKILL.md file. Drop it in. Cuts the filler Perplexity Computer adds to every response — narrated tool calls, sycophantic openers, post-action summaries, redundant confirmations — without losing any useful signal.
+## Install and use
 
-## The Problem
+1. Open [SKILL.md](SKILL.md) and choose **Download raw file**.
+2. In Perplexity Computer, open **Skills → Create skill → Upload a skill** and select the file.
+3. In a task, ask: “Use token-efficient. Compare these two reports and cite the differences.” Computer can also select a skill when the task matches its description. See [Perplexity Academy's guide to Skills](https://www.perplexity.ai/en-GB/hub/academy/how-to-use-computer-skills).
 
-By default, Perplexity Computer:
+For another [Agent Skills](https://agentskills.io/specification) client, place the file in a folder named `token-efficient` under that client's skills directory. For the Claude Code original, see [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient).
 
-- Opens with "Great question!" / "Sure!" / "Happy to help!"
-- Narrates every tool call: "Let me search for that...", "Now I'll read the file..."
-- Summarizes what it just did after doing it: "I've successfully created the file at /path/..."
-- Restates your question before answering it
-- Adds "Let me know if you need anything else!" to everything
-- Creates todo lists for 2-step tasks
-- Delegates to subagents when one direct tool call would suffice
-- Over-qualifies simple answers with unnecessary caveats
+## What to expect
 
-All of this costs tokens. None of it adds value.
+| Try it with | Expected behavior |
+| --- | --- |
+| “Look up one value in this CSV.” | Read the relevant field and answer directly. No task list or subagent for a one-call lookup. |
+| “Write the report and hand it to the next agent.” | Keep citations in the report. Give the next agent the exact path, even if the file is already visible to the user. |
+| “The upload timed out. Did it go through?” | Check the destination before retrying. If the status is still unknown, say so. Report the useful error without exposing credentials. |
+| “Explain the calculation step by step.” | Give the requested steps. Brevity does not override the deliverable. |
 
-## The Fix
+[Issue #1](https://github.com/get-zeked/token-efficient/issues/1) contains the model reviews behind v2. The full skill file, including frontmatter, went from 1,206 tokens in v1 to 385 in v2 (68% smaller, measured with `tiktoken`'s `o200k_base` encoding). This measures the instructions only. It does not predict Perplexity session usage or billing.
 
-Upload `SKILL.md` to your Perplexity Computer skills. It activates on every session automatically.
+## Credits and license
 
-## What It Fixes
-
-| # | Problem | Fix |
-|---|---------|-----|
-| 1 | Sycophantic openers/closers | No filler phrases — just answer |
-| 2 | Narrated tool usage | Execute tools silently |
-| 3 | Post-action summaries | If the user can see the result, don't describe it |
-| 4 | Restating the question | Answer directly |
-| 5 | Redundant file confirmations | File is visible in UI — don't narrate the path |
-| 6 | Unnecessary todo lists | Just do the task if it's under 3 steps |
-| 7 | Over-delegation to subagents | Direct tool call when one call is enough |
-| 8 | Decorative Unicode | Plain hyphens and straight quotes only |
-| 9 | Excessive caveats | Save qualifications for genuine edge cases |
-| 10 | Pre-action planning narration | Do, don't announce |
-
-## Profiles
-
-| Profile | Best For |
-|---------|---------|
-| **Universal** | Any Perplexity Computer session |
-| **Coding** | Dev work, code review, debugging in the sandbox |
-| **Research** | Web search, analysis, report building |
-| **Automation** | Cron jobs, pipelines, batch operations |
-
-## Install
-
-### Perplexity Computer
-1. Download `SKILL.md` from this repo
-2. Go to **Skills** → **Create skill** → **Upload a skill**
-3. Drop it in
-4. Active on every session automatically
-
-### Claude Code
-Use the original: [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient)
-
-### Any SKILL.md-compatible agent (Codex, Cursor, Copilot)
-Copy to your agent's skills directory. Follows the [agentskills.io](https://agentskills.io) open standard.
-
-## Override Rule
-
-User instructions always win. If you ask for verbose output, step-by-step breakdowns, or detailed explanations, those instructions override every rule in this file.
-
-## Stats
-
-- **110 lines** — intentionally minimal so it doesn't cost more input tokens than it saves
-- **5.2 KB** — small enough to load on every message without overhead
-- Validated against the agentskills.io spec
-
-## Credits
-
-Based on [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient) by Drona Gangarapu. Adapted for the Perplexity Computer environment.
-
-## License
-
-MIT
+Adapted by get-zeked from [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient) by Drona Gangarapu. [MIT license](LICENSE).
